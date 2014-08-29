@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GeoCheck</title>
+    <link href="css/leaflet.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="map_canvas"></div>
+    <script src="js/leaflet.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <!-- plugins below -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      function initmap() {
+        map = L.map('map_canvas', {
+          center: [47.06129129529406, 4.655869150706053],
+          zoom: 6,
+          zoomControl: false,
+          attributionControl : true
+        });
+    
+        cscale = L.control.scale({"position": 'bottomright', "imperial": false, "updateWhenIdle": true}).addTo(map);
+        czoom = L.control.zoom({"position": 'bottomright'}).addTo(map);
+        var osmUrl='http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.jpg';
+    
+        allLayers['osm'] = new Array(
+          L.tileLayer(osmUrl, {
+            minZoom: 1,
+            maxZoom: 18,
+            attribution: '© Les Contributeurs d\'<a href="http://www.openstreetmap.org/copyright/fr">OpenStreetMap</a>, Tuiles <a href="http://mapquest.com/">MapQuest</a>'
+          }), '', 1);
+    
+        allLayers['osm'][0].addTo(map);
+    
+        var Form = L.Control.extend({
+          options: {
+            position: 'topleft'
+          },
+          onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'top-bar');
+            container.innerHTML = '<a href="/"><img src="http://www.ideeslibres.org/wp-content/themes/ideeslibres/images/ideeslibres2.png" alt="IdéesLibres.org" /></a><div id="form-container"><form><input type="text" name="q" id="q" /><input type="submit" /></form></div>';
+            return container;
+          }
+        });
+        
+        var Share = L.Control.extend({
+          options: {
+            position: 'bottomleft'
+          },
+          onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'share');
+            container.innerHTML = '<a href="javascript:openShare()"><img src="share.png" title="Partager" alt="Partager"</a>';
+            return container;
+          }
+        });
+        
+        map.addControl(new Form());
+        map.addControl(new Share());
+    
+        stopPropag();
+    
+        $(window).resize(function() {
+          
+        });
+        // map.on('click', reverse);
+      }
+    
+      function stopPropag() {
+        $.each($('.leaflet-control'), function() {
+          L.DomEvent.disableClickPropagation(this);
+          L.DomEvent.on(this, 'click', L.DomEvent.stopPropagation);
+          L.DomEvent.on(this, 'mousewheel', L.DomEvent.stopPropagation);
+          L.DomEvent.on(this, 'MozMousePixelScroll', L.DomEvent.stopPropagation);
+        });
+      }
+      
+      allLayers = [];
+      $(document).ready( function() { initmap(); });
+    </script>
+  </body>
+</html>
